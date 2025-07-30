@@ -17,7 +17,7 @@ import wx.xrc
 class MainFrame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Serpentine Generation", pos = wx.DefaultPosition, size = wx.Size( 500,700 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Serpentine Generation", pos = wx.DefaultPosition, size = wx.Size( 600,800 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
@@ -36,8 +36,14 @@ class MainFrame ( wx.Frame ):
 
 		_MainSizer.Add( self.top_text, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
-		self.paramguide = wx.StaticBitmap( self.MainPanel, wx.ID_ANY, wx.Bitmap( u"paramguide.bmp", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, 0 )
-		_MainSizer.Add( self.paramguide, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		# Import here to avoid circular imports
+		try:
+			from .serpentine_preview import SerpentinePreviewPanel
+			self.paramguide = SerpentinePreviewPanel( self.MainPanel )
+		except ImportError:
+			# Fallback to static bitmap if preview module not available
+			self.paramguide = wx.StaticBitmap( self.MainPanel, wx.ID_ANY, wx.Bitmap( u"paramguide.bmp", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, 0 )
+		_MainSizer.Add( self.paramguide, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
 
 		ParamsSizer = wx.GridSizer( 0, 2, 0, 0 )
 

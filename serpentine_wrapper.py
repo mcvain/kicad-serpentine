@@ -1,10 +1,11 @@
 import wx
 from .serpentine_gui import MainFrame, ErrorDialog
 from .serpentine_utils import SerpentineVector
+from .serpentine_preview import PreviewUpdateMixin
 import functools as ft
 import os
 
-class SerpentineGUI(MainFrame):
+class SerpentineGUI(MainFrame, PreviewUpdateMixin):
 
     def __init__(self, parent, validate_func, run_func):
         super(SerpentineGUI, self).__init__(parent)
@@ -54,6 +55,13 @@ class SerpentineGUI(MainFrame):
 
         # Set default values
         self.set_default_values()
+        
+        # Set up preview panel reference and updates
+        if hasattr(self.paramguide, 'update_preview'):
+            self.preview_panel = self.paramguide
+            self.setup_preview_updates()
+            # Initial preview update
+            self.update_preview_from_current_values()
 
     def set_default_values(self):
         """Set default parameter values in the GUI fields"""
@@ -73,6 +81,32 @@ class SerpentineGUI(MainFrame):
         for param, value in default_params.items():
             if param in self.param_setters:
                 self.param_setters[param](value)
+
+    def update_preview_from_current_values(self):
+        """Update the preview panel with current parameter values"""
+        if hasattr(self, 'preview_panel'):
+            params = {}
+            for param_name, getter in self.param_getters.items():
+                try:
+                    value = getter()
+                    if value is not None:
+                        params[param_name] = value
+                    else:
+                        # Use defaults for invalid values
+                        defaults = {
+                            "radius": 2, "amplitude": 5, "alpha": 10, "length": 20, "pitch": 0.3,
+                            "f_wc": 2, "f_width": 0.4, "b_wc": 3, "b_width": 0.2, "noedge": False
+                        }
+                        params[param_name] = defaults.get(param_name, 0)
+                except:
+                    # Use default value on any error
+                    defaults = {
+                        "radius": 2, "amplitude": 5, "alpha": 10, "length": 20, "pitch": 0.3,
+                        "f_wc": 2, "f_width": 0.4, "b_wc": 3, "b_width": 0.2, "noedge": False
+                    }
+                    params[param_name] = defaults.get(param_name, 0)
+            
+            self.preview_panel.update_preview(params)
 
     # event handlers
 
@@ -173,10 +207,12 @@ class SerpentineWrapper():
 
     @staticmethod
     def validate(args):
+        from .serpentine_utils import SerpentineVector
         return SerpentineVector().validate(args)
     
     @staticmethod
     def run(args):
+        from .serpentine_utils import SerpentineVector
         return SerpentineVector().run(args)
 
 if __name__ == '__main__':
