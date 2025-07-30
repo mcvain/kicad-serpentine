@@ -52,6 +52,28 @@ class SerpentineGUI(MainFrame):
 
         self.params = {param:None for param in self.param_getters}
 
+        # Set default values
+        self.set_default_values()
+
+    def set_default_values(self):
+        """Set default parameter values in the GUI fields"""
+        default_params = {
+            "radius": 2,
+            "amplitude": 5,
+            "alpha": 10,
+            "length": 20,
+            "pitch": 0.3,
+            "f_wc": 2,
+            "f_width": 0.4,
+            "b_wc": 3,
+            "b_width": 0.2,
+            "noedge": False
+        }
+        
+        for param, value in default_params.items():
+            if param in self.param_setters:
+                self.param_setters[param](value)
+
     # event handlers
 
     def ApplyEvent(self, event):
