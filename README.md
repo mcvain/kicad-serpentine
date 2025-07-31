@@ -2,6 +2,8 @@
  
 KiCAD extension for generating serpentine traces, primarily intended for use in developing flexible PCBs for wearable applications. This extension provides the ability to generate round/curved traces on the front and/or back copper layers + edge cuts.
 
+https://github.com/user-attachments/assets/1bec5b72-2b96-4420-bdf2-8b8e402b203f
+
 ![Preview](images/preview.png)
 
 ### Trace generation parameters
